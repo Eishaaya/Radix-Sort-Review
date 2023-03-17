@@ -6,10 +6,11 @@
         static int[] RadixSort(int[] dataset, int maxDegree)
         {
             int[] buckets = new int[10];
+            int[] result = new int[dataset.Length];
             for (int i = 0; i < maxDegree; i++)
             {
                 int currDegree = (int)Math.Pow(10, i);
-                int[] result = new int[dataset.Length];
+                
                 for (int j = 0; j < dataset.Length; j++)
                 {
                     buckets[dataset[j] / currDegree % 10]++;
@@ -23,7 +24,7 @@
                     result[--buckets[dataset[j] / currDegree % 10]] = dataset[j];
                 }
                 for (int j = 0; j < buckets.Length; buckets[j++] = 0) ;
-                dataset = result;
+                result.CopyTo(dataset, 0);
             }
             return dataset;
         }
