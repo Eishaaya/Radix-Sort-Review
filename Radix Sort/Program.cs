@@ -2,11 +2,15 @@
 {
     internal class Program
     {
-        //2mn + 20m
-        static int[] RadixSort(int[] dataset, int maxDegree)
+        //Where 'n' is number of items, and 'm' is their max Degree
+        //Runs with a time complexity of m(3n + 20), abstracting away some array operations & constnts => O(m*n)
+        //max degree can also be detected algorithmically, but it's taken in for simplicity's sake
+        static void RadixSort(int[] dataset, int maxDegree)
         {
+            
             int[] buckets = new int[10];
             int[] result = new int[dataset.Length];
+            
             for (int i = 0; i < maxDegree; i++)
             {
                 int currDegree = (int)Math.Pow(10, i);
@@ -23,11 +27,11 @@
                 {
                     result[--buckets[dataset[j] / currDegree % 10]] = dataset[j];
                 }
-                for (int j = 0; j < buckets.Length; buckets[j++] = 0) ;
+                Array.Clear(buckets);
                 result.CopyTo(dataset, 0);
             }
-            return dataset;
         }
+        static int[] FunRadix(int[] data, int max) { RadixSort(data, max); return data; }
         static void Main(string[] args)
         {
             Random rand = new Random(1);
@@ -35,7 +39,7 @@
             {
                 int magnitude = rand.Next(1, 10);
                 int max = (int)Math.Pow(10, magnitude);
-                foreach (var item in RadixSort(new int[rand.Next(20)].Select(
+                foreach (var item in FunRadix(new int[rand.Next(20)].Select(
                     (_) => { int temp = rand.Next(max); Console.WriteLine(temp); return temp; }).ToArray(), magnitude))
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
