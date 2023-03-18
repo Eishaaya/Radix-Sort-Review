@@ -1,53 +1,63 @@
-﻿namespace Radix_Sort
+﻿using Radix_Sort;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace NonComparativeSorts
 {
-    internal class Program
+   
+    class HighQualityTestCase : IKeyable
     {
-        //Where 'n' is number of items, and 'm' is their max Degree
-        //Runs with a time complexity of m(3n + 20), abstracting away some array operations & constnts => O(m*n)
-        //max degree can also be detected algorithmically, but it's taken in for simplicity's sake
-        static void RadixSort(int[] dataset, int maxDegree)
+        public struct Comparer : IEqualityComparer<HighQualityTestCase>
         {
-            
-            int[] buckets = new int[10];
-            int[] result = new int[dataset.Length];
-            
-            for (int i = 0; i < maxDegree; i++)
-            {
-                int currDegree = (int)Math.Pow(10, i);
-                
-                for (int j = 0; j < dataset.Length; j++)
-                {
-                    buckets[dataset[j] / currDegree % 10]++;
-                }
-                for (int j = 1; j < buckets.Length; j++)
-                {
-                    buckets[j] += buckets[j - 1];
-                }
-                for (int j = dataset.Length - 1; j >= 0; j--)
-                {
-                    result[--buckets[dataset[j] / currDegree % 10]] = dataset[j];
-                }
-                Array.Clear(buckets);
-                result.CopyTo(dataset, 0);
-            }
+            bool IEqualityComparer<HighQualityTestCase>.Equals(HighQualityTestCase? x, HighQualityTestCase? y) => x.Key == y.Key;
+
+            int IEqualityComparer<HighQualityTestCase>.GetHashCode(HighQualityTestCase obj) => obj.Key.GetHashCode();
         }
-        static int[] FunRadix(int[] data, int max) { RadixSort(data, max); return data; }
-        static void Main(string[] args)
+        public string Value { get; }
+        public uint Key { get; }
+        public HighQualityTestCase(Random rand, uint key)
         {
-            Random rand = new Random(1);
+            Key = key;
+            uint StringVal = 0;
             while (true)
             {
-                int magnitude = rand.Next(1, 10);
-                int max = (int)Math.Pow(10, magnitude);
-                foreach (var item in FunRadix(new int[rand.Next(20)].Select(
-                    (_) => { int temp = rand.Next(max); Console.WriteLine(temp); return temp; }).ToArray(), magnitude))
+                char newChar = (char)rand.Next(char.MaxValue + 1);
+                if (StringVal + newChar > Key)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine(item);
+                    Value += (char)(Key - StringVal);
+                    return;
                 }
-                Console.ResetColor();
-                Console.ReadKey();
+                Value += newChar;
+                StringVal += newChar;
             }
+        }
+        public override string ToString() => Value;
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int items = 20;
+            int min = 1;
+            int max = int.MaxValue;
+
+            var sortMe = Enumerable.Repeat(1, items)
+                                   .Select(n => new HighQualityTestCase(Random.Shared, (uint)Random.Shared.Next(min, max)))
+                                   .ToArray();
+
+            var sorted = sortMe.ToArray();
+
+            //sorted.SimpleRadixSort();
+            sorted.KeyedCountingSort();
+
+            bool isSorted = sortMe.OrderBy(n => n.Key)
+                                  .SequenceEqual(sorted, new HighQualityTestCase.Comparer());
+
+            Console.WriteLine(isSorted);
+
         }
     }
 }
