@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NonComparativeSorts
 {
-    static partial class NonComparativeSorts
+    public static partial class NonComparativeSorts
     {
         //basic counting sort
         //negatives can easily be handled via offsetting by the smallest negative value so all numbers are treated as if they were >= 0

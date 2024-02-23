@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace NonComparativeSorts
 {
-    static partial class NonComparativeSorts
+    public static partial class NonComparativeSorts
     {
         public static void BetterRadixSort(this int[] dataset)
         {            
-            // Better version (by Edden) - now with negatives.
+            // Better version (by Edden) - now with negatives, and dataset compression*.
             // Only 10 buckets, O(n + 10) extra space 
             // 10 buckets because this is a decimal (base-10) implementation 
             // (only 2 would be needed for binary, 16 would be needed for hex, etc.)
@@ -19,8 +19,8 @@ namespace NonComparativeSorts
             // over the dataset as many times as there are digits 
             // in the largest value in the array
             var dataBounds = dataset.GetMinAndMax();
-            int negativeOffset = dataBounds.Min < 0 ? dataBounds.Min : 0;
-            int maxDegree = dataBounds.Max;
+            int minimumOffset = dataBounds.Min;
+            int maxDegree = (dataBounds.Max - dataBounds.Min).DigitCount();
 
             int[] buckets = new int[10];
             int[] result = new int[dataset.Length];
@@ -35,7 +35,7 @@ namespace NonComparativeSorts
                 // is happening yet, just counting
                 for (int j = 0; j < dataset.Length; j++)
                 {
-                    buckets[(dataset[j] - negativeOffset) / divisor % 10]++;
+                    buckets[(dataset[j] - minimumOffset) / divisor % 10]++;
                 }
 
                 // this clever loop counts how many values
@@ -58,7 +58,7 @@ namespace NonComparativeSorts
                 // Note, no comparisions - just placement of values.
                 for (int j = dataset.Length - 1; j >= 0; j--)
                 {
-                    result[--buckets[(dataset[j] - negativeOffset) / divisor % 10]] = dataset[j];
+                    result[--buckets[(dataset[j] - minimumOffset) / divisor % 10]] = dataset[j];
                 }
 
                 // Remaining data in the buckets array must be cleared,

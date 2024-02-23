@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NonComparativeSorts
 {   
-    static partial class NonComparativeSorts
+    public static partial class NonComparativeSorts
     {
         public static void SimpleRadixSort(this uint[] values)
         {

@@ -26,9 +26,9 @@ namespace NonComparativeSorts
             return maxValue;
         }
 
-        public static uint GetMaxValue<T>(this T[] values) where T : IKeyable
+        public static int GetMaxValue<T>(this T[] values) where T : IKeyable
         {
-            uint maxValue = 0;
+            int maxValue = 0;
             for (int i = 0; i < values.Length; i++)
             {
                 if (values[i].Key > maxValue)
@@ -58,8 +58,39 @@ namespace NonComparativeSorts
 
             return (maxValue, minValue);
         }
+        public static (int Max, int Min) GetMinAndMax<T>(this T[] values) where T : IKeyable
+        {
+            int maxValue = int.MinValue;
+            int minValue = int.MaxValue;
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (values[i].Key > maxValue)
+                {
+                    maxValue = values[i].Key;
+                }
+                if (values[i].Key < minValue)
+                {
+                    minValue = values[i].Key;
+                }
+            }
+
+            return (maxValue, minValue);
+        }
 
         public static int DigitCount(this uint value)
+        {
+            int digitCount = 0;
+
+            do
+            {
+                value /= 10;
+                digitCount++;
+            } while (value > 0);
+
+            return digitCount;
+        }
+
+        public static int DigitCount(this int value)
         {
             int digitCount = 0;
 

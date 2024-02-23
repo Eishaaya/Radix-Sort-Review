@@ -1,12 +1,15 @@
-﻿using Radix_Sort;
+﻿using BurstTrieTypes;
+
+using Radix_Sort;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace NonComparativeSorts
 {
-   
+
     class HighQualityTestCase : IKeyable
     {
         public struct Comparer : IEqualityComparer<HighQualityTestCase>
@@ -16,17 +19,18 @@ namespace NonComparativeSorts
             int IEqualityComparer<HighQualityTestCase>.GetHashCode(HighQualityTestCase obj) => obj.Key.GetHashCode();
         }
         public string Value { get; }
-        public uint Key { get; }
-        public HighQualityTestCase(Random rand, uint key)
+        public int Key { get; }
+        public HighQualityTestCase(Random rand, int key)
         {
             Key = key;
+            key = Math.Abs(key);
             uint StringVal = 0;
             while (true)
             {
                 char newChar = (char)rand.Next(char.MaxValue + 1);
-                if (StringVal + newChar > Key)
+                if (StringVal + newChar > key)
                 {
-                    Value += (char)(Key - StringVal);
+                    Value += (char)(key - StringVal);
                     return;
                 }
                 Value += newChar;
@@ -40,23 +44,76 @@ namespace NonComparativeSorts
     {
         static void Main(string[] args)
         {
-            int items = 20;
-            int min = 1;
-            int max = int.MaxValue;
 
-            var sortMe = Enumerable.Repeat(1, items)
-                                   .Select(n => new HighQualityTestCase(Random.Shared, (uint)Random.Shared.Next(min, max)))
-                                   .ToArray();
+            int items = 10000;
+            int min = 'a';
+            int max = 'z';
+            int seed = 1;
 
-            var sorted = sortMe.ToArray();
+            var words = File.ReadAllLines(@"..\..\..\WordBank.txt");
 
-            //sorted.SimpleRadixSort();
-            sorted.KeyedCountingSort();
+            BurstTrie trie = new(100, (char)min, (char)max);
 
-            bool isSorted = sortMe.OrderBy(n => n.Key)
-                                  .SequenceEqual(sorted, new HighQualityTestCase.Comparer());
+            //BST testBST = new BST();
+            HashSet<string> testSet = new(items);
+            Random randy = new(seed);
+            HashSet<string> wat = new();
 
-            Console.WriteLine(isSorted);
+            for (int i = 0; i < items; i++)
+            {
+                var testValue = words[randy.Next(0, words.Length)];
+                testSet.Add(testValue);
+                trie.Insert(testValue);
+
+                wat.Add(testValue);
+            }
+            var currItems = items = testSet.Count;
+            //Random newRandy = new(seed);
+            var watEnumerator = wat.GetEnumerator();
+            for (int i = -1; true;)
+            {
+                var skip = randy.Next(1, 4);
+                for (int j = 0; j < skip; j++, i++) watEnumerator.MoveNext();
+                string testValue = watEnumerator.Current;
+
+                if (i >= items) break;
+                currItems--;
+                if (!testSet.Contains(testValue))
+                {
+                    ;
+                }
+                testSet.Remove(testValue);
+                trie.Remove(testValue);
+            }
+
+
+            var treeOutput = trie.GetAll();
+            var testList = testSet.ToList();
+            testList.Sort();
+
+            for (int i = 0; i < Math.Max(treeOutput.Count, testList.Count); i++)
+            {
+                if (testList[i] != treeOutput[i] || !testList.Contains(treeOutput[i]))
+                {
+                    ;
+                }
+            }
+            ;
+
+
+            //var sortMe = Enumerable.Repeat(1, items)
+            //                       .Select(n => new HighQualityTestCase(Random.Shared, Random.Shared.Next(min, max)))
+            //                       .ToArray();
+
+            //var sorted = sortMe.ToArray();
+
+            ////sorted.SimpleRadixSort();
+            //sorted.KeyedCountingSort();
+
+            //bool isSorted = sortMe.OrderBy(n => n.Key)
+            //                      .SequenceEqual(sorted, new HighQualityTestCase.Comparer());
+
+            //Console.WriteLine(isSorted);
 
         }
     }
