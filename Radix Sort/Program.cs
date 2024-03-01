@@ -44,61 +44,85 @@ namespace NonComparativeSorts
     {
         static void Main(string[] args)
         {
+            Random rand = new(1);
 
-            int items = 10000;
+            int items = 100000;
             int min = 'a';
             int max = 'z';
             int seed = 1;
 
-            var words = File.ReadAllLines(@"..\..\..\WordBank.txt");
+            var words = File.ReadAllLines(@"..\..\..\BiggerWordBank.txt");
 
-            BurstTrie trie = new(100, (char)min, (char)max);
+            min = words.Min(m => m.Min());
+            max = words.Max(m => m.Max());
+
+
+
+
+            BurstTrie trie = new(125, (char)min, (char)max);
 
             //BST testBST = new BST();
             HashSet<string> testSet = new(items);
             Random randy = new(seed);
-            HashSet<string> wat = new();
+            //HashSet<string> wat = new();
 
             for (int i = 0; i < items; i++)
             {
                 var testValue = words[randy.Next(0, words.Length)];
                 testSet.Add(testValue);
-                trie.Insert(testValue);
-
-                wat.Add(testValue);
-            }
-            var currItems = items = testSet.Count;
-            //Random newRandy = new(seed);
-            var watEnumerator = wat.GetEnumerator();
-            for (int i = -1; true;)
-            {
-                var skip = randy.Next(1, 4);
-                for (int j = 0; j < skip; j++, i++) watEnumerator.MoveNext();
-                string testValue = watEnumerator.Current;
-
-                if (i >= items) break;
-                currItems--;
-                if (!testSet.Contains(testValue))
-                {
-                    ;
-                }
-                testSet.Remove(testValue);
-                trie.Remove(testValue);
+                //wat.Add(testValue);
             }
 
-
-            var treeOutput = trie.GetAll();
             var testList = testSet.ToList();
+
+            ;
+
+            for (int i = 0; i < testList.Count; i++)
+            {
+                trie.Insert(testList[i]);
+            }
+
+            var output = trie.GetAll();
+
+
             testList.Sort();
 
-            for (int i = 0; i < Math.Max(treeOutput.Count, testList.Count); i++)
-            {
-                if (testList[i] != treeOutput[i] || !testList.Contains(treeOutput[i]))
-                {
-                    ;
-                }
-            }
             ;
+
+
+
+            //var currItems = items = testSet.Count;
+            ////Random newRandy = new(seed);
+            //var watEnumerator = wat.GetEnumerator();
+            //for (int i = -1; true;)
+            //{
+            //    var skip = randy.Next(1, 4);
+            //    for (int j = 0; j < skip; j++, i++) watEnumerator.MoveNext();
+            //    string testValue = watEnumerator.Current;
+
+            //    if (i >= items) break;
+            //    currItems--;
+            //    if (!testSet.Contains(testValue))
+            //    {
+            //        ;
+            //    }
+            //    testSet.Remove(testValue);
+            //    trie.Remove(testValue);
+            //}
+
+
+            //var treeOutput = trie.GetAll();
+            //var testList = testSet.ToList();
+            //testList.Sort();
+
+            //for (int i = 0; i < Math.Max(treeOutput.Count, testList.Count); i++)
+            //{
+            //    if (testList[i] != treeOutput[i] || !testList.Contains(treeOutput[i]))
+            //    {
+            //        ;
+            //    }
+            //}
+            //;
 
 
             //var sortMe = Enumerable.Repeat(1, items)
