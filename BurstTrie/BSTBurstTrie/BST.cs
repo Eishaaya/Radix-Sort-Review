@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BurstTrieTypes
+namespace BurstTrie.BSTBurstTrie
 {
     public class BST
     {

@@ -1,4 +1,7 @@
-﻿using BurstTrieTypes;
+﻿using BurstTrie;
+
+using BSTTrie = BurstTrie.BSTBurstTrie.BurstTrie;
+using ListTrie = BurstTrie.ListBurstTrie.BurstTrie;
 
 using Radix_Sort;
 
@@ -42,8 +45,30 @@ namespace NonComparativeSorts
 
     class Program
     {
+        public static void StandardTest(Type trieType, int dataAmount, int seed = 1)
+        {
+            ITrie testTrie = trieType == typeof(BSTTrie) ? new BSTTrie(rand: new Random(seed)) : new ListTrie();
+            var words = File.ReadAllLines(@"..\..\..\..\BenchmarkDemo\BiggestWordBank.txt");
+
+            Random randy = new(seed);
+
+
+            var min = words.Min(m => m.Min());
+            var max = words.Max(m => m.Max());
+
+            for (int i = 0; i < dataAmount; i++)
+            {
+                var testValue = words[randy.Next(0, words.Length)];
+                testTrie.Insert(testValue);
+            }
+
+
+        }
+
         static void Main(string[] args)
         {
+            StandardTest(typeof(BSTTrie), 1000);
+
             Random rand = new(1);
 
             int items = 100000;
@@ -57,9 +82,7 @@ namespace NonComparativeSorts
             max = words.Max(m => m.Max());
 
 
-
-
-            BurstTrie trie = new(125, (char)min, (char)max);
+            BurstTrie.BSTBurstTrie.BurstTrie trie = new(alphabetStart: (char)min, alphabetEnd: (char)max);
 
             //BST testBST = new BST();
             HashSet<string> testSet = new(items);
@@ -69,7 +92,7 @@ namespace NonComparativeSorts
             for (int i = 0; i < items; i++)
             {
                 var testValue = words[randy.Next(0, words.Length)];
-                testSet.Add(testValue);
+                testSet.Add(testValue.ToLower());
                 //wat.Add(testValue);
             }
 
